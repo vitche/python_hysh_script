@@ -1,1 +1,1 @@
-# python_hysh_script
+# HyperShell script
