@@ -7,5 +7,5 @@ setup(
    author='Vitche Research Team',
    author_email='developer@vitche.com',
    py_modules=[],
-   install_requires=[]
+   install_requires=['hysh.script']
 )
