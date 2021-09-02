@@ -1,4 +1,6 @@
+import os
 import tempfile
+
 
 class ShellTemplate:
 
@@ -33,7 +35,8 @@ class HyperShellTemplate(ShellTemplate):
         file.write(result.encode())
         file.close()
 
-        !hysh $cluster_definition $file.name
+        command = f"hysh ${cluster_definition} ${file.name}"
+        return os.system(command)
 
 
 class TCPPortRange:

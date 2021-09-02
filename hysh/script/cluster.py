@@ -4,6 +4,7 @@ import json
 from enum import Enum
 from hysh.script.template import HyperShellTemplate, ShellTemplate
 
+
 class HyperShellClusterOperationType(Enum):
     TOPOLOGY = 1
     IDENTIFIERS = 2
@@ -11,15 +12,21 @@ class HyperShellClusterOperationType(Enum):
     CONTROLLER = 4
     WORKER = 5
 
+
 class HyperShellClusterOperationFormat(Enum):
     UNKNOWN = 1
     TEXT = 2
     JSON = 3
 
+
 # The strategy object to process operations
 class HyperShellCluster:
+    identifiers = []
+    settings = {}
 
-    def __init(self, identifiers=[]):
+    def __init(self, identifiers=None):
+        if identifiers is None:
+            identifiers = []
         self.identifiers = identifiers
 
     def process(self, operation):
@@ -60,21 +67,18 @@ class HyperShellClusterOperation:
                 # by the controller organization.
                 # TODO: Fix otherwise
                 path = settings["CONTROLLER_CLUSTER_DEFINITION"]
-                command = self.payload
-                response = !hyshm $path $command - -format $output_format
-                return response
+                command = f"hyshm ${path} \"{self.payload}\" --format ${output_format}"
+                return os.system(command)
             elif HyperShellClusterOperationType.IDENTIFIERS == self.operation_type:
                 return self.payload
             elif HyperShellClusterOperationType.CONTROLLER == self.operation_type:
                 path = settings["CONTROLLER_CLUSTER_DEFINITION"]
-                command = f"\"{self.payload}\""
-                response =!hysh $path $command - -format $output_format
-                return response
+                command = f"hysh ${path} \"{self.payload}\" --format ${output_format}"
+                return os.system(command)
             elif HyperShellClusterOperationType.WORKER == self.operation_type:
                 path = settings["WORKER_CLUSTER_DEFINITION"]
-                command = f"\"{self.payload}\""
-                response =!hysh $path $command - -format $output_format
-                return response
+                command = f"hysh ${path} \"{self.payload}\" --format ${output_format}"
+                return os.system(command)
 
 
 class HyperShellClusterCLI:
@@ -97,7 +101,8 @@ class HyperShellClusterCLI:
                     HyperShellClusterOperation(HyperShellClusterOperationType.IDENTIFIERS, payload))
         return []
 
-    def remove(self, path):
+    @staticmethod
+    def remove(path):
         os.remove(path)
 
     def save(self, path):
@@ -149,7 +154,13 @@ class HyperShellClusterCLI:
     def install(self):
         results = []
         for i in self.cluster.identifiers:
-            payload = f"install --organization-identifier Org1MSP --administrator-logon Admin@org1.example.com --administrator-password adminpw --chaincode-name shell-linux --chaincode-identifier {i} --chaincode-version 0.0.1"
+            payload = f"install " \
+                      f"--organization-identifier Org1MSP " \
+                      f"--administrator-logon Admin@org1.example.com " \
+                      f"--administrator-password adminpw " \
+                      f"--chaincode-name shell-linux " \
+                      f"--chaincode-identifier {i} " \
+                      f"--chaincode-version 0.0.1"
             result = self.cluster.process(HyperShellClusterOperation(HyperShellClusterOperationType.TOPOLOGY, payload,
                                                                      HyperShellClusterOperationFormat.TEXT))
             # Get standard output
@@ -162,7 +173,12 @@ class HyperShellClusterCLI:
     def instantiate(self):
         results = []
         for i in self.cluster.identifiers:
-            payload = f"instantiate --organization-identifier Org1MSP --administrator-logon Admin@org1.example.com --administrator-password adminpw --chaincode-name {i} --chaincode-version 0.0.1"
+            payload = f"instantiate " \
+                      f"--organization-identifier Org1MSP " \
+                      f"--administrator-logon Admin@org1.example.com " \
+                      f"--administrator-password adminpw " \
+                      f"--chaincode-name {i} " \
+                      f"--chaincode-version 0.0.1"
             result = self.cluster.process(HyperShellClusterOperation(HyperShellClusterOperationType.TOPOLOGY, payload,
                                                                      HyperShellClusterOperationFormat.TEXT))
             # Get standard output
@@ -174,8 +190,8 @@ class HyperShellClusterCLI:
 
     def package(self):
         cluster_definition = self.cluster.settings["CONTROLLER_CLUSTER_DEFINITION"]
-        result = !hyshm $cluster_definition package
-        return result
+        command = f"hyshm \"${cluster_definition}\" package"
+        return os.system(command)
 
     def c(self, payload):
         return self.cluster.process(HyperShellClusterOperation(HyperShellClusterOperationType.CONTROLLER, payload,
