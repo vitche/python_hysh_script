@@ -67,17 +67,17 @@ class HyperShellClusterOperation:
                 # by the controller organization.
                 # TODO: Fix otherwise
                 path = settings["CONTROLLER_CLUSTER_DEFINITION"]
-                command = f"hyshm ${path} \"{self.payload}\" --format ${output_format}"
+                command = f"hyshm {path} \"{self.payload}\" --format {output_format}"
                 return os.popen(command).read()
             elif HyperShellClusterOperationType.IDENTIFIERS == self.operation_type:
                 return self.payload
             elif HyperShellClusterOperationType.CONTROLLER == self.operation_type:
                 path = settings["CONTROLLER_CLUSTER_DEFINITION"]
-                command = f"hysh ${path} \"{self.payload}\" --format ${output_format}"
+                command = f"hysh {path} \"{self.payload}\" --format {output_format}"
                 return os.popen(command).read()
             elif HyperShellClusterOperationType.WORKER == self.operation_type:
                 path = settings["WORKER_CLUSTER_DEFINITION"]
-                command = f"hysh ${path} \"{self.payload}\" --format ${output_format}"
+                command = f"hysh {path} \"{self.payload}\" --format {output_format}"
                 return os.popen(command).read()
 
 
@@ -190,7 +190,7 @@ class HyperShellClusterCLI:
 
     def package(self):
         cluster_definition = self.cluster.settings["CONTROLLER_CLUSTER_DEFINITION"]
-        command = f"hyshm \"${cluster_definition}\" package"
+        command = f"hyshm \"{cluster_definition}\" package"
         return os.popen(command).read()
 
     def c(self, payload):

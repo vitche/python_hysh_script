@@ -35,7 +35,7 @@ class HyperShellTemplate(ShellTemplate):
         file.write(result.encode())
         file.close()
 
-        command = f"hysh ${cluster_definition} ${file.name}"
+        command = f"hysh {cluster_definition} {file.name}"
         return os.popen(command).read()
 
 
