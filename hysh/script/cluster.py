@@ -164,7 +164,8 @@ class HyperShellClusterCLI:
             result = self.cluster.process(HyperShellClusterOperation(HyperShellClusterOperationType.TOPOLOGY, payload,
                                                                      HyperShellClusterOperationFormat.TEXT))
             # Get standard output
-            result = result[0]
+            # TODO: Is that required any more?
+            # result = result[0]
             # Parse JSON response
             result = json.loads(result)
             results.append(result)
