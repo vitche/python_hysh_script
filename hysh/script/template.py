@@ -36,7 +36,7 @@ class HyperShellTemplate(ShellTemplate):
         file.close()
 
         command = f"hysh ${cluster_definition} ${file.name}"
-        return os.system(command)
+        return os.popen(command).read()
 
 
 class TCPPortRange:
