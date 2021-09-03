@@ -201,9 +201,11 @@ class HyperShellClusterCLI:
         result = self.cluster.process(HyperShellClusterOperation(HyperShellClusterOperationType.CONTROLLER, payload,
                                                                  HyperShellClusterOperationFormat.JSON))
         # Get standard output
-        result = result[0]
+        # TODO: Not needed any more?
+        # result = result[0]
         # Remove comma from the JSON stream
-        result = result.rstrip(",")
+        # TODO: For some reason, we need to strip newline characters as well
+        result = result.rstrip(",\n")
         # Parse JSON response
         result = json.loads(result)
         # Extract HySh transaction output
