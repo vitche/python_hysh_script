@@ -43,8 +43,16 @@ class TCPPortRange:
 
     def __init__(self, start):
         self.start = start
+        self.current = start
 
     def next(self):
-        result = self.start
-        self.start = self.start + 1
+        result = self.current
+        self.current = self.current + 1
         return str(result)
+
+    def __str__(self):
+        result = ""
+        for i in range(self.start, self.current-1):
+            result += str(i) + ","
+        result += str(self.current-1)
+        return result
